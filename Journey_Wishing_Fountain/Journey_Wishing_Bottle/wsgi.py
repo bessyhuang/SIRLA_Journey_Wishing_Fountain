@@ -1,5 +1,5 @@
 """
-WSGI config for Journey_Wishing_Fountain project.
+WSGI config for Journey_Wishing_Bottle project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 
@@ -11,6 +11,6 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'Journey_Wishing_Fountain.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'Journey_Wishing_Bottle.settings')
 
 application = get_wsgi_application()

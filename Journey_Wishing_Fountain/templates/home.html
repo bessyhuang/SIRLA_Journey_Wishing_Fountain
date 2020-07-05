@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %}
+	<title>SIRLA 許願瓶</title>
+{% endblock %}
+
+{% block content %}
+	{% if request.user.is_superuser %}
+		<p>Welcome, {{ user.username }}</p>
+		<a href="{% url 'post_new' %}"><span>我要推薦</span></a>
+	{% elif request.user.is_authenticated %}
+		<p>Welcome, {{ user.username }}</p>
+	{% endif %}
+
+	<!-- Taiwan Map -- START -->
+		{% include "home/index.html" %}
+	<!-- Taiwan Map -- END -->
+
+{% endblock %}

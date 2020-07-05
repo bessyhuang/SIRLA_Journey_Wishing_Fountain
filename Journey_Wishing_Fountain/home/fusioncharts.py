@@ -1,12 +1,11 @@
 from django.http import HttpResponse
-import json
 from collections import OrderedDict
 from io import StringIO
 from enum import Enum
+import json
 
 # Common base class for FC
 class FusionCharts:
-
     baseTemplate = """
         <script type="text/javascript">
             FusionCharts.ready(function () {
@@ -107,85 +106,3 @@ class TimeSeries:
         
     def GetDataStore(self):
         return "{0}".format(self.fusionTableObject.GetDataTable())
-
-
-# Common base class for FusionTable
-class FusionTable:
-
-    class OrderBy(Enum):
-        ASC = 0
-        DESC = 1
-    
-    class FilterType(Enum):
-        Equals = 0
-        Greater = 1
-        GreaterEquals = 2
-        Less = 3
-        LessEquals = 4
-        Between = 5
-    
-    stringBuilder = None
-
-    # constructor
-    def __init__(self, schema, data):
-        self.stringBuilder = StringBuilder()
-        self.stringBuilder.AppendLine("let schema = {0};".format(schema))
-        self.stringBuilder.AppendLine("let data = {0};".format(data))
-        self.stringBuilder.AppendLine("let fusionDataStore = new FusionCharts.DataStore();")
-        self.stringBuilder.AppendLine("let fusionTable = fusionDataStore.createDataTable(data, schema);")
-
-    def Select(self, *columnName):
-        if len(columnName) > 0:
-            columns = "'{0}'".format("', '".join(columnName))
-            self.stringBuilder.AppendLine("fusionTable = fusionTable.query(FusionCharts.DataStore.Operators.select([" + columns + "]));")
-    
-    def Sort(self, columnName, columnOrderBy):
-        orderby = "asc" if columnOrderBy == FusionTable.OrderBy.ASC else "desc"
-        sortedData = "sort([{0}])".format("{{column: '{0}', order: '{1}'}}".format(columnName, orderby))
-        self.stringBuilder.AppendLine("fusionTable = fusionTable.query({0});".format(sortedData))
-
-    def CreateFilter(self, filterType, columnName, *values):
-        fx = FusionTable.FilterType(filterType).name
-        fx = fx[0].lower() + fx[1:]
-
-        # empty list
-        my_list = []
-        for a in values:
-            my_list.append(str(a))
-
-        my_list.append(my_list[0])
-    
-        switcher = {
-            FusionTable.FilterType.Equals: "FusionCharts.DataStore.Operators.{0}('{1}', '{2}')".format(fx, columnName, my_list[0]),
-            FusionTable.FilterType.Between: "FusionCharts.DataStore.Operators.{0}('{1}', {2}, {3})".format(fx, columnName, my_list[0], my_list[1])
-        }
-
-        return switcher.get(filterType, "FusionCharts.DataStore.Operators.{0}('{1}', {2})".format(fx, columnName, my_list[0]))
-
-    def ApplyFilter(self, filter):
-        if len(filter) > 0:
-            self.stringBuilder.AppendLine("fusionTable = fusionTable.query(" + filter + ");")
-
-    def ApplyFilterByCondition(self, filter):
-        if len(filter) > 0:
-            self.stringBuilder.AppendLine("fusionTable = fusionTable.query(" + filter + ");")
-    
-    def Pipe(self, *filters):
-        if len(filters) > 0:
-            filter = "{0}".format(", ".join(filters))
-            self.stringBuilder.AppendLine("fusionTable = fusionTable.query(FusionCharts.DataStore.Operators.pipe(" + filter + "));")
-
-    def GetDataTable(self):
-        return self.stringBuilder
-
-class StringBuilder:
-     _file_str = None
-
-     def __init__(self):
-         self._file_str = StringIO()
-
-     def AppendLine(self, str):
-         self._file_str.write(str + "\n")
-
-     def __str__(self):
-         return self._file_str.getvalue()

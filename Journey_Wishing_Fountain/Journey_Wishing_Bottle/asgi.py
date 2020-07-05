@@ -1,5 +1,5 @@
 """
-ASGI config for Journey_Wishing_Fountain project.
+ASGI config for Journey_Wishing_Bottle project.
 
 It exposes the ASGI callable as a module-level variable named ``application``.
 
@@ -11,6 +11,6 @@ import os
 
 from django.core.asgi import get_asgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'Journey_Wishing_Fountain.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'Journey_Wishing_Bottle.settings')
 
 application = get_asgi_application()
